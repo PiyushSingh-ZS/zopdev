@@ -1,10 +1,9 @@
-name: Publish api image
+name: Publish zopdev image
 
 on:
   push:
     tags:
       - 'v*'
-  pull_request:
     branches:
       - main
 
@@ -78,9 +77,8 @@ jobs:
           CI=false npm run prettier:check
 
   publish-dashboard-image:
-    if: ${{ startsWith(github.ref, 'refs/tags/v')}}
-    name: 🔨 Build and 🐳 Dockerize
-    needs: prettier-and-lint-dashboard
+    name: 🔨 Build and 🐳 Dockerize UI
+    needs: [prettier-and-lint-dashboard,test-and-code-quality-api]
     runs-on: ubuntu-latest
 
     permissions:
@@ -124,9 +122,8 @@ jobs:
           tags: piyush7/testdev/dashboard:${{ env.RELEASE_VERSION }}
 
   publich-api-image:
-    if: ${{ startsWith(github.ref, 'refs/tags/v')}}
-    name: 🔨 Build and 🐳 Dockerize
-    needs: test-and-code-quality-api
+    name: 🔨 Build and 🐳 Dockerize API
+    needs: [prettier-and-lint-dashboard,test-and-code-quality-api]
     runs-on: ubuntu-latest
 
     permissions:
@@ -154,8 +151,7 @@ jobs:
           file: ./api/Dockerfile
           tags: piyush7/testdev/api:${{ env.RELEASE_VERSION }}
   publich-zopdev-image:
-    if: ${{ startsWith(github.ref, 'refs/tags/v')}}
-    name: 🔨 Build and 🐳 Dockerize
+    name: 🔨 Build and 🐳 Dockerize ZopDev
     needs: [prettier-and-lint-dashboard,test-and-code-quality-api]
     runs-on: ubuntu-latest
 
